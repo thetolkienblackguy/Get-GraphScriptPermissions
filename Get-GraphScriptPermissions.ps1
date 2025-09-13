@@ -1,3 +1,34 @@
+<#PSScriptInfo
+
+    .VERSION 1.0.0
+
+    .GUID e452ad1e-a89e-4160-9356-c97415e6cc37
+
+    .AUTHOR Gabriel Delaney
+
+    .COMPANYNAME Phoenix Horizons LLC
+
+    .COPYRIGHT 2025 Phoenix Horizons LLC
+
+    .TAGS Graph, PowerShell, Permissions
+
+    .LICENSEURI https://github.com/TheTolkienBlackGuy/Get-GraphScriptPermissions/blob/main/LICENSE
+
+    .PROJECTURI https://github.com/TheTolkienBlackGuy/Get-GraphScriptPermissions
+
+    .ICONURI
+
+    .EXTERNALMODULEDEPENDENCIES Microsoft.Graph.Authentication
+
+    .REQUIREDSCRIPTS
+
+    .EXTERNALSCRIPTDEPENDENCIES
+
+    .RELEASENOTES Initial release
+
+    .PRIVATEDATA
+
+#>
 <#
     .SYNOPSIS
     Analyze a PowerShell script for Microsoft Graph cmdlets and required permissions.
@@ -24,14 +55,6 @@
     .OUTPUTS
     System.Object[]
 
-    .NOTES
-    Author: Gabriel Delaney
-    Date: 09/13/2025
-    Version: 1.0.0
-    Name: Get-GraphScriptPermissions
-
-    Version History:
-    1.0.0 - Initial release - Gabriel Delaney - 09/13/2025
 #>
 [CmdletBinding()]
 Param(
@@ -42,6 +65,8 @@ Param(
     [string]$OutputPath
 
 )
+#requires -Modules Microsoft.Graph.Authentication
+
 #region Helper functions
 # Function to find the Graph cmdlets in a script
 Function Find-GraphCmdletString {
@@ -173,18 +198,15 @@ Function Get-GraphCmdletPermissions {
         $context = Get-MgContext
         
         # If the context is not authenticated with Microsoft Graph, throw a warning
-        If (!$context) {
-            Write-Warning "This session is not authenticated with Microsoft Graph. In order to determine scopes, you must be authenticated with Microsoft Graph."
-        
-        } Else {
+        If ($context) {
             $current_scopes = $context.Scopes
         
-        }
+        } 
     } Process {
         Try {
             # Get the permissions for the cmdlet
             $permissions = (Find-MgGraphCommand @find_cmd_params ).Permissions | Where-Object { 
-                $_.FullDescription -like "Allows the app*" -and $_.FullDescription -notmatch "\byour\b" 
+                $_.FullDescription -notlike "Allows you*" -and $_.FullDescription -notmatch "\byour\b" 
             
             }     
         } Catch {
