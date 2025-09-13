@@ -2,6 +2,8 @@
 
     .VERSION 1.0.0
 
+    .DESCRIPTION Analyze a PowerShell script for Microsoft Graph cmdlets and required permissions.
+
     .GUID e452ad1e-a89e-4160-9356-c97415e6cc37
 
     .AUTHOR Gabriel Delaney
