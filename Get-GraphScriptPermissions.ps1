@@ -226,9 +226,9 @@ Function Get-GraphCmdletPermissions {
         # Create the object
         $obj = [ordered] @{}
         $obj["Cmdlet"] = $cmdlet
-        $obj["LeastPrivilegedEffectivePermission"] = $permissions[0].Name
-        $obj["Description"] = $permissions[0].Description
-        $obj["Permissions"] = ($permissions.Name | Select-Object -Unique) -join ", "
+        $obj["LeastPrivilegedEffectivePermission"] = If ($permissions) { $permissions[0].Name } Else { "None" }
+        $obj["Description"] = If ($permissions) { $permissions[0].Description } Else { "None" }
+        $obj["Permissions"] = If ($permissions) { ($permissions.Name | Select-Object -Unique) -join ", " } Else { "None" }
         $obj["HasScope"] = $has_scope
 
     } End {
